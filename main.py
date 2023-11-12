@@ -13,17 +13,14 @@ from models import Note, Base, User  # 确保导入了 User 模型
 from pydantic import BaseModel
 from typing import List, Optional
 
+from config import API_KEY, API_KEY_NAME, SECRET_KEY
+
 # 安全性和密码
-SECRET_KEY = "YOUR_SECRET_KEY"
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-API_KEY = "efa3af828jfo43aef39jfa33afe378675aef91"
-API_KEY_NAME = "access_token"
-
 
 
 class NoteCreate(BaseModel):
