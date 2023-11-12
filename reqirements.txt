@@ -1,0 +1,7 @@
+fastapi
+sqlalchemy
+pydantic
+aiomysql
+passlib
+python-jose[cryptography]
+bcrypt
