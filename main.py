@@ -27,7 +27,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class NoteCreate(BaseModel):
     title: str
-    body: str
+    body: Optional[str] = ""
+    url: Optional[str] = ""
     category: Optional[str] = "Personal"
     username: Optional[str] = "user1"
 
@@ -39,6 +40,8 @@ class NoteUpdate(BaseModel):
 class NoteResponse(BaseModel):
     id: int
     title: str
+    body: Optional[str] = ""
+    url: Optional[str] = ""
     category: Optional[str] = "Personal"
     username: Optional[str] = "user1"
     timestamp: datetime
@@ -114,7 +117,7 @@ async def create_note(request: Request, db: AsyncSession = Depends(get_db)):
     db.add(new_note)
     await db.commit()
     await db.refresh(new_note)
-    return NoteCreate(**new_note.__dict__)
+    return NoteResponse(**new_note.__dict__)
 
 @app.get("/notes/", response_model=PaginationResponse)
 async def read_notes(username: str, page: int = 1, page_size: int = 10, db: AsyncSession = Depends(get_db)):

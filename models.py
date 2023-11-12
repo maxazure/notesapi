@@ -9,7 +9,8 @@ class Note(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), index=True)
-    body = Column(String(10240))
+    body = Column(String(10240), default="None")
+    url = Column(String(255), default="")
     timestamp = Column(DateTime, default=datetime.now)
     category = Column(String(255), default="Personal")
     username = Column(String(255), default="user1")
