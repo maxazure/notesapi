@@ -107,11 +107,15 @@ async def on_startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-@app.post("/notes/", response_model=NoteCreate)
+@app.post("/notes/", response_model=NoteResponse)
 async def create_note(request: Request, db: AsyncSession = Depends(get_db)):
     try:
         note_data = await request.json()
-        new_note = Note(**note_data)
+        valid_fields = {field for field in NoteCreate.__annotations__}
+        print(valid_fields)
+        filtered_data = {k: v for k, v in note_data.items() if k in valid_fields}
+
+        new_note = Note(**filtered_data)
     except JSONDecodeError as e:
         body = await request.body()
         note_data = {
