@@ -205,7 +205,3 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
     return {"message": "User created successfully"}
-
-@app.get("/")
-async def read_protected():
-    return {"message": f"Hello"}
