@@ -177,8 +177,6 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     return {"message": "User created successfully"}
 
-
-# 示例受保护路由
-@app.get("/protected/")
-async def read_protected(current_user: str = Depends(get_current_user)):
-    return {"message": f"Hello {current_user}"}
+@app.get("/")
+async def read_protected():
+    return {"message": f"Hello"}
