@@ -5,3 +5,5 @@ aiomysql
 passlib
 python-jose[cryptography]
 bcrypt
+gunicorn 
+uvicorn[standard]
