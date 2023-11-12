@@ -17,6 +17,12 @@ from typing import List, Optional
 
 from config import API_KEY, API_KEY_NAME, SECRET_KEY
 
+import logging
+
+# 配置日志
+logging.basicConfig(filename='app.log', level=logging.INFO, 
+                    format='%(asctime)s %(levelname)s:%(message)s')
+
 # 安全性和密码
 
 ALGORITHM = "HS256"
@@ -106,13 +112,17 @@ async def create_note(request: Request, db: AsyncSession = Depends(get_db)):
     try:
         note_data = await request.json()
         new_note = Note(**note_data)
-    except JSONDecodeError:
+    except JSONDecodeError as e:
         body = await request.body()
         note_data = {
             "title": datetime.now().strftime("%Y-%m-%d"),
             "body": body.decode("utf-8")  # 假设 body 是 UTF-8 编码
         }
         new_note = Note(**note_data)
+        logging.error("An error occurred: %s\nRequest Body: %s", str(e), body.decode("utf-8"))
+    except Exception as e:
+        logging.error("An error occurred: %s", str(e))
+        raise e
 
     db.add(new_note)
     await db.commit()
