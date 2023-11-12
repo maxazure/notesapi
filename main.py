@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Security
+from fastapi import FastAPI, Depends, HTTPException, Security, Request
 from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials
 from fastapi.security import  OAuth2PasswordRequestForm
 from fastapi.security.api_key import APIKeyQuery, APIKey
@@ -8,6 +8,7 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
+from json.decoder import JSONDecodeError
 
 from database import AsyncSessionLocal, engine
 from models import Note, Base, User  # 确保导入了 User 模型
@@ -98,8 +99,18 @@ async def on_startup():
         await conn.run_sync(Base.metadata.create_all)
 
 @app.post("/notes/", response_model=NoteCreate)
-async def create_note(note: NoteCreate, db: AsyncSession = Depends(get_db)):
-    new_note = Note(**note.dict())
+async def create_note(request: Request, db: AsyncSession = Depends(get_db)):
+    try:
+        note_data = await request.json()
+        new_note = Note(**note_data)
+    except JSONDecodeError:
+        body = await request.body()
+        note_data = {
+            "title": datetime.now().strftime("%Y-%m-%d"),
+            "body": body.decode("utf-8")  # 假设 body 是 UTF-8 编码
+        }
+        new_note = Note(**note_data)
+
     db.add(new_note)
     await db.commit()
     await db.refresh(new_note)
