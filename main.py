@@ -4,6 +4,7 @@ from fastapi.security import  OAuth2PasswordRequestForm
 from fastapi.security.api_key import APIKeyQuery, APIKey
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import func
 from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
