@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Security, Request
+from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials
 from fastapi.security import  OAuth2PasswordRequestForm
 from fastapi.security.api_key import APIKeyQuery, APIKey
@@ -16,7 +17,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from config import API_KEY, API_KEY_NAME, SECRET_KEY
-
+import os
 import logging
 
 # 配置日志
@@ -29,6 +30,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+current_file_path = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file_path)
 
 
 class NoteCreate(BaseModel):
@@ -205,3 +208,11 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
     return {"message": "User created successfully"}
+
+@app.get("/privacy-policy", response_class=HTMLResponse)
+async def privacy_policy():
+   
+    print(current_file_path)
+    with open(current_directory + '/privacy_policy.html', 'r') as file:
+        html_content = file.read()
+    return HTMLResponse(content=html_content)
